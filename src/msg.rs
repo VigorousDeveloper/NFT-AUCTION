@@ -1,17 +1,16 @@
 use cosmwasm_std::{Addr, Uint128};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use cw20::Cw20ReceiveMsg;
 use crate::state::{ Royalty };
 use crate::asset::Asset;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct InstantiateMsg {
-    pub nft_contract_address: String
-}
+pub struct InstantiateMsg {}
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-#[serde(rename_all = "snake_case")]
 pub enum ExecuteMsg {
+    #[serde(rename_all = "snake_case")]
     // Place an NFT on Auction
     PlaceListing {
         id: String,
@@ -34,7 +33,26 @@ pub enum ExecuteMsg {
     // remove the minter from whitelist
     RemoveMinter {
         minter: String,
+    },
+    // receive cw20 token
+    ReceiveToken(Cw20ReceiveMsg),
+    // set nft contract address
+    SetNftAddress {
+        nft_address: String
     }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum Cw20HookMsg {
+    // Place an NFT on Auction
+    PlaceListing {
+        id: String,
+    },
+    // Bid on an NFT already put on Auction
+    BidListing {
+        listing_id: String,
+    },
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -48,8 +66,9 @@ pub enum QueryMsg {
     // query nft info
     QueryNftInfo { 
         token_id: String, 
-        contract_addr: String,
     },
+    // query all nft ids
+    AllTokens{},
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
